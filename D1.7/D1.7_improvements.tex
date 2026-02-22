@@ -10,6 +10,7 @@
 \usepackage{lipsum}
 \usepackage{subcaption}
 \usepackage{amsmath}
+\usepackage{todonotes}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{1.7}
@@ -46,6 +47,7 @@
 \begin{documentControl}
     \addVersion{0.1}{21/02/2026}{Marco Feder}{Initial draft}
     \addVersion{0.2}{22/02/2026}{Marco Feder}{Polygonal discretization module section}
+    \addVersion{0.3}{23/02/2026}{Marco Feder}{Integration and preliminary results for PSCToolkit}
 
 \end{documentControl}
 
@@ -80,11 +82,11 @@ Approval Date: [Date]
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Pre-exascale capabilities of deal.II]
-    \item Section \ref{sec:section3}: [Pre-exascale modules of deal.II]
-    \item Section \ref{sec:section4}: [Polygonal discretization module]
-    \item Section \ref{sec:section5}: [Integration of PSCToolkit]
-    \item Section \ref{sec:section6}: [Integration of MUMPS]
+    \item Section \ref{sec:section2}: Pre-exascale capabilities of deal.II
+    \item Section \ref{sec:section3}: Pre-exascale modules of deal.II
+    \item Section \ref{sec:section4}: Polygonal discretization module
+    \item Section \ref{sec:section5}: Integration of PSCToolkit
+    \item Section \ref{sec:section6}: Integration of MUMPS
 \end{itemize}
 
 \newpage
@@ -128,7 +130,7 @@ have devised a \emph{geometrically informed} multigrid preconditioner, with the 
 
 Finally, the linear system of equations associated with the model is solved, at each time-step, with a conjugate-gradient method preconditioned by one V-cycle of our multigrid scheme. The preconditioner has been successfully applied to several test cases, including high-order polynomial degrees, and a realistic 3D ventricular geometry, shown in Figure~\ref{fig:left_ventricle}. Since the
 finest level of the multigrid hierarchy consists of an hexahedral grid, we leverage the tensor-product structure of the basis functions and quadrature points in order to exploit state-of-the-art matrix-free operator evaluation techniques developed in~\cite{KronbichlerKormann}, which form a key part of the computational backbone of
-the \texttt{deal.II} library.
+the deal.II library.
 
 In Figure~\ref{fig:iterates_3D_monodomain}, we report the number of iterations throughout all the simulation, comparing our agglomerated multigrid preconditioner with the AMG implementation available in the Trilinos ML package. The results are reported
 for polynomial degrees $p\!=\!1,2$ for the three-dimensional ventricle mesh. It is evident how
@@ -198,9 +200,56 @@ application cost of the preconditioner.
 \section{{Integration of PSCToolkit}}
 \label{sec:section5}
 
+The integration of PSCToolkit (Parallel Sparse Computing Toolkit)~\cite{psctoolkit} aims to provide scalable algebraic
+multigrid (AMG) preconditioners through its AMG4PSBLAS package. By merging the preconditioners developed within AMG4PSBLAS
+into deal.II, it will be possible to exploit them as drop-in replacements in application codes. The integration
+targets the following new release candidates: PSBLAS v3.9 and AMG4PSBLAS v1.2.
+
+\subsection{Integration status}
+The integration of PSCToolkit into the deal.II master branch is currently in progress, and can be tracked on the
+official deal.II GitHub repository~\footnote{See \url{https://github.com/dealii/dealii/pull/19050} and \url{https://github.com/dealii/dealii/pull/18938}}. Concurrently, a fully working interface (whose code will be progressively upstreamed into the main deal.II repository) has been developed on a separate
+branch\footnote{Available at \url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas/}.}, providing complete access
+to the preconditioners developed within AMG4PSBLAS.
+
+In general, the design of the user interface closely follows the existing structure of the main deal.II linear algebra frameworks, such as the
+interfaces to Trilinos and PETSc. In the same fashion, the interface to AMG preconditioners by AMG4PSBLAS has been designed following the same design
+principles of the existing interfaces to Trilinos and PETSc wrappers. Indeed, within the namespace \texttt{PSCToolkitWrappers}, a new class \texttt{PreconditionAMG} has been introduced, which implements
+a minimal interface which allows to:
+\begin{itemize}
+    \item construct the preconditioner with a given set of user-specified parameters,
+    \item build the AMG hierarchy and related smoothers, out of a given distributed PSBLAS system matrix,
+    \item apply the resulting preconditioner to a given vector through the standardized \texttt{vmult(dst,src)} method.
+\end{itemize}
 
 
-\subsection{{[Subsection Title]}}
+Parameters are exposed by passing an \texttt{AdditionalData} object to the constructor of the preconditioner, which is a
+standardized data structure to pipe additional flags to the preconditioner. In this way, the integration is completely
+transparent from the user's perspective: switching from, e.g., a Trilinos ML or Hypre AMG preconditioner to an AMG4PSBLAS one requires
+no structural changes to the application code.
+
+\subsection{Preliminary results for AMG4PSBLAS preconditioners}
+
+In order to assess the correctness and performance of our interface, we have performed a series of
+numerical experiments on the cluster AMELIA. Tables~\ref{tab:amelia_2d} and~\ref{tab:amelia_3d}\todo{Add tables with AMELIA cluster results} report the
+iteration counts obtained with continuous $\mathcal{Q}^1$ finite elements on quadrilateral and hexahedral meshes, respectively, for
+the variable-coefficient Poisson problem
+$$-\nabla \cdot ( k(x) \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
+with homogeneous Dirichlet boundary conditions on $\partial \Omega$. We vary the number of mesh refinement levels, the number of parallel processes, and the anisotropy of the diffusion coefficient $k(x)$, reporting on the
+iteration counts of the AMG4PSBLAS preconditioner.
+
+
+To evaluate performance at significantly larger problem sizes, we have been granted access to the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center. These resources will enable us to conduct experiments and benchmarking at scale, providing insight into the behavior of our interface under sizes
+typical of pre-exascale applications.
+
+\subsection{Ongoing and future work}
+
+Ongoing work includes several tasks aimed at finalizing the integration and assessing the performance of the AMG4PSBLAS preconditioners in large-scale simulations:
+\begin{itemize}
+    \item finalizing the interface, introducing wrappers for sparse matrix types,
+    \item large-scale performance evaluations on HPC systems to identify potential performance bottlenecks in the interface and in the preconditioner itself,
+    \item GPU support: PSBLAS provides GPU acceleration through CUDA backends. The exposition of this functionality through the
+          deal.II interface will enable GPU-accelerated AMG preconditioning within standard deal.II solver workflows.
+\end{itemize}
 
 
 
@@ -215,6 +264,8 @@ application cost of the preconditioner.
 \section{{Conclusion}} \label{sec:conclusion}
 
 \begin{thebibliography}{10}
+    \bibitem[Filippone and Colajanni, 2000]{PSBLAS}Salvatore Filippone and Michele Colajanni, "PSBLAS: a library for parallel linear algebra computation on sparse matrices", ACM Transactions on Mathematical Software, vol. 26, no. 4, pp. 527--550, 2000. \url{https://doi.org/10.1145/365723.365732}
+    \bibitem[D'Ambra et al., 2025]{psctoolkit}Pasqua D'Ambra, Fabio Durastante and Salvatore Filippone, "PSCToolkit: solving sparse linear systems with a large number of GPUs", arXiv preprint arXiv:2406.19754, 2025. \url{https://arxiv.org/abs/2406.19754}
     \bibitem[Cangiani et al., 2014]{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
     \bibitem[Antonietti et al., 2013]{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
     \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
