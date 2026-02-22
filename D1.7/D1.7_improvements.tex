@@ -42,10 +42,8 @@
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{[Date]}{[Author name]}{Initial draft}
-    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{0.1}{21/02/2026}{Marco Feder}{Initial draft}
+
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -72,120 +70,106 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-\lipsum[1-2]
+
 
 \subsection{{Purpose of the Document}}
-\lipsum[3]
+
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
-    \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
+    \item Section \ref{sec:section2}: [Pre-exascale capabilities of deal.II]
+    \item Section \ref{sec:section3}: [Pre-exascale modules of deal.II]
+    \item Section \ref{sec:section4}: [Polygonal discretization module]
+    \item Section \ref{sec:section5}: [Integration of PSCToolkit]
+    \item Section \ref{sec:section6}: [Integration of MUMPS]
 \end{itemize}
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Pre-exascale capabilities of deal.II}}
 \label{sec:section2}
 
-\lipsum[4-5]
-
 \subsection{{[Subsection Title]}}
-\lipsum[6]
 
-\subsection{{[Subsection Title]}}
-\lipsum[7]
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Pre-exascale modules of deal.II}}
 \label{sec:section3}
 
-\lipsum[8-9]
-
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \lipsum[10][1-2]
-    \item \lipsum[10][3-4]
-    \item \lipsum[10][5-6]
-\end{itemize}
-
-\subsection{{[Subsection Title]}}
-\lipsum[11]
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Polygonal discretization module}}
 \label{sec:section4}
 
-\lipsum[12-13]
+The polygonal discretization module described in Work Package 1.5 has undergone exhaustive testing and validation. The new library
+associated with this module, \texttt{Polydeal}, is available at \url{https://github.com/fdrmrc/Polydeal}. Some features available in this
+module are designed to be integrated into the deal.II library, which is up-to-date with the latest deal.II master branch, in order to guarantee maximum compatibility.
+A comprehensive test suite is deployed at each new commit on the continuous integration system to guarantee the integrity of the codebase.
 
-\begin{center}
-    \begin{table}[h!]
-    \small
-    \caption{[Table Caption]}
-    \renewcommand{\arraystretch}{1.25}
-    \label{tab:example_table}
-    \begin{tabular}{|l|l|l|c|}
-    \hline
-    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
-    \hline
-    Item 1 & Description & Category & Value \\
-    Item 2 & Description & Category & Value \\
-    Item 3 & Description & Category & Value \\
-    \hline
-    \end{tabular}
-    \end{table}
-\end{center}
+\subsection{Multilevel preconditioning}
+One of the key features of polytopal methods is their very good interplay with discontinuous Galerkin (DG) methodologies (see e.g.,~\cite{Antoniettihp}). In particular, the flexibility
+of DG methods allows the usage of very general agglomerated grids, i.e. grids obtained by merging together several elements of a
+finer grid.
+
+
+
+By exploiting the efficient agglomeration routine introduced in~\cite{FEDER2025113773}, already available in the library, it is possible to construct
+a hierarchy of \emph{nested} agglomerated grids, for which intergrid transfer operators among consecutive levels are cheap.  Indeed, the construction of a hierarchy of meshes is not trivial, and it may be necessary to fall back to algebraic multigrid methods for the solution of the linear systems arising from the
+discretization.
+Therefore, it is possible to construct multilevel preconditioners for DG discretizations of elliptic problems, leveraging polytopal grids on coarser levels. This strategy is particularly appealing when very fine meshes are given, for which no hierarchy of
+meshes is available. Coarser operators can be obtained by rediscretization on the agglomerated grids, or by triple Galerkin projection\footnote{This means that coarser operators are recursively obtained by restriction of the finer operators, in an algebraic multigrid sense.}. The latter approach is particularly appealing, since it
+allows obtaining coarser operators without the need of rediscretization on agglomerated meshes.
+
+Notably, the latter approach has been successfully tested in~\cite{feder2026agglomeration}, for the solution of the monodomain model in
+cardiac electrophysiology. More precisely, we have developed a novel multigrid solver for its DG discretization, exploiting agglomerated
+grids on coarser levels. The resulting preconditioner builds coarser operators in an algebraic multigrid fashion, injecting geometric information through the agglomeration routine. In this sense, we
+have devised a \emph{geometrically informed} multigrid preconditioner.
+The linear system of equations is solved, at each time-step, with a conjugate-gradient method preconditioned by one V-cycle of our multigrid scheme.
+
+The preconditioner has been successfully applied to several test cases and polynomial degrees, including a realistic 3D ventricular geometry. The results indicate the high
+efficiency of the preconditioner, with a number of iterations that is almost independent of the mesh size, polynomial degree, model parameters, and number of parallel processes employed. We have compared its performance both in terms of
+iteration counts and wall-clock time with well-established AMG preconditioners, such as the ones implemented in the Trilinos ML package.
+
+
+
+
+
+
+
+
+
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Integration of PSCToolkit}}
 \label{sec:section5}
 
-\lipsum[14-15]
+
 
 \subsection{{[Subsection Title]}}
-\lipsum[16]
 
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: \lipsum[17][1-2]
-    \item \textbf{[Item Title]}: \lipsum[17][3-4]
-    \item \textbf{[Item Title]}: \lipsum[17][5-6]
-\end{itemize}
+
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Integration of MUMPS}}
 \label{sec:section6}
 
-\lipsum[18-19]
 
-\begin{center}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
-\hline
-Item 1 & Description & Value \\
-\hline
-Item 2 & Description & Value \\
-\hline
-Item 3 & Description & Value \\
-\hline
-\end{tabular}}
-\label{tab:example_table2}
-\end{center}
-
-\newpage 
+\newpage
 
 \section{{Conclusion}} \label{sec:conclusion}
 
-\lipsum[20]
+\begin{thebibliography}{10}
+    \bibitem[Antonietti et al., 2013]{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
+    \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
+    \bibitem[Feder and Africa, 2026]{feder2026agglomeration}Marco Feder and Pasquale Claudio Africa, "An agglomeration-based multigrid solver for the discontinuous Galerkin discretization of cardiac electrophysiology", arXiv preprint arXiv:2602.16312, 2026.
+
+\end{thebibliography}
+
+
 
 \label{MyLastPage}
 
