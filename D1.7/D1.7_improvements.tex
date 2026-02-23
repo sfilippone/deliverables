@@ -48,6 +48,8 @@
     \addVersion{0.1}{21/02/2026}{Marco Feder}{Initial draft}
     \addVersion{0.2}{22/02/2026}{Marco Feder}{Polygonal discretization module section}
     \addVersion{0.3}{23/02/2026}{Marco Feder}{Integration and preliminary results for PSCToolkit}
+    \addVersion{0.4}{23/02/2026}{Chiara Puglisi}{Preliminary results
+      with advanced features in MUMPS}
 
 \end{documentControl}
 
@@ -259,6 +261,51 @@ Ongoing work includes several tasks aimed at finalizing the integration and asse
 \label{sec:section6}
 
 
+ The direct solution of a sparse linear system $Ax=b$ relies on the factorization of the matrix $A$. 
+ The robustness of direct methods comes at the cost of a high complexity both in terms
+ of number of floating point operations and of memory footprint.
+
+
+The complexity of the direct methods approaches can be reduced thanks to Block
+Low-Rank (BLR) approximation (see \cite{ablm:17b,aabblw:15}) with adaptive precision \cite{abbg:23} to exploit data sparsity.
+This is illustrated in Table~\ref{t:beltrami}) on the Beltrami Flow problem from lifex library. Comparing the first two rows "Full-Rank" factorization and "BLR factorization with adaptive precision" in Table~\ref{t:beltrami}) we see that the number of operation is reduce by two orders of magnitude.
+
+\begin{table}[hb]
+\begin{center}
+	\begin{tabular}{|l|c|c|c|c|}
+\hline
+                              & {Memory used}   & Number of op. & Total time &  Backward error  \\
+			      & (Gbytes) & to factor matrix & (sec) & after IR\\
+\hline
+  % 1 Node x 4MPI x 48th  & & & & \\
+    Full-Rank                 &    {620}       &     {1.6E15}   &    {\bf 364}    &      2E-15  \\
+%    BLR(1E-9)+adaptive        &    298       &     6.1E13   &    \phantom{0}57    &      4E-8\phantom{0}   \\
+    BLR(1E-5)+adaptive        &    224       &     2.3E13   &    \phantom{0}38    &      1E-10   \\
+%                    & & & & \\
+\hline
+ \multicolumn{5}{c}{ } \\
+ \multicolumn{5}{c}{\bf Single precision factorization in double prec instance with mixed precision IR}  \\
+\hline
+       Full-Rank              &    315       &     1.6E15   &    229    &      2E-12   \\
+       BLR(1E-5)+adaptive     &    {125}       &     {2.0E13}   &   \bf{\phantom{0}24}    &      8E-11  \\
+
+\hline
+\end{tabular}
+\caption{\label{t:beltrami} Beltrami matrix, performance analysis, AMD Genoa (4MPI x 48th). IR=Iterative Refinement}
+\end{center}
+\end{table}
+
+The performance can be further improved using mixed precision algorithms \cite{abhl22a} as illustrated with the last two lines of Table~\ref{t:beltrami}.
+In row "Full-Rank", {\it single precision factorization with mixed precision iterative refinement (IR)} and an efficient approach to access data in low precision  \cite{ajlmp:2025} enable to divide time and memory by a factor of two.
+Combining this approach to BLR with adaptive precision leads to an overall significant reduction in time (from 364 to 24 seconds) and memory (from 620 to 125 Gbytes) with a satisfactory backward error.
+It should be mentioned, as described in \cite{abhl22a}, that on ill-conditioned matrices GMRES based iterative refinements should be used.
+
+Recent experiments with accelerated nodes (Nvidia-GraceHopper and AMD-Mi250 and AMD-Mi300) have shown that we can reduce the time for full-rank factorization of the Beltrami matrix by a factor between 3 and 6 depending on the compute node. Next challenge will be to combine the benefits from adaptive BLR and mixed precision algorithms on accelerated nodes.
+
+
+
+
+
 \newpage
 
 \section{{Conclusion}} \label{sec:conclusion}
@@ -271,6 +318,15 @@ Ongoing work includes several tasks aimed at finalizing the integration and asse
     \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
     \bibitem[Feder and Africa, 2026]{feder2026agglomeration}Marco Feder and Pasquale Claudio Africa, "An agglomeration-based multigrid solver for the discontinuous Galerkin discretization of cardiac electrophysiology", arXiv preprint arXiv:2602.16312, 2026.
     \bibitem[Kronbichler and Kormann, 2019]{KronbichlerKormann}Martin Kronbichler and Katharina Kormann, "Fast Matrix-Free Evaluation of Discontinuous Galerkin Finite Element Operators", ACM Transactions on Mathematical Software, vol. 45, no. 3, Article 29, 2019.
+    \bibitem[Amestoy, Boiteau et al., 2023]{abbg:23}P.~Amestoy, O.~Boiteau, A.~Buttari, M.~Gerest, F.~Jezequel, J.-Y. L'Excellent, and T.~Mary. Mixed precision low-rank approximations and their application to block low-rank {LU} factorization. {\em IMA Journal of Numerical Analysis}, 43:2198--2227, July 2023.
+
+    \bibitem[Amestoy, Buttari et al., 2023]{abhl22a} P.~Amestoy, A.~Buttari, N.~J. Higham, J.-Y. L'Excellent, T.~Mary, and B.~Vieubl\'e. Combining sparse approximate factorizations with mixed precision iterative refinement. {\em ACM Transactions on Mathematical Software}, 49(1):1--29, 2023.
+      
+    \bibitem[Amestoy et al., 2025] {ajlmp:2025} P.~Amestoy, A.~Jego, J.-Y. L'Excellent, T.~Mary, and G.~Pichon. {BLAS-based Block Memory Accessor with Applications to Mixed Precision Sparse Direct Solvers}. preprint submitted to publication, Apr. 2025.
+      
+    \bibitem[Amestoy et al., 2015]{aabblw:15} P.~R. Amestoy, C.~Ashcraft, O.~Boiteau, A.~Buttari, J.-Y. L'Excellent, and C.~Weisbecker. Improving multifrontal methods by means of block low-rank representations. {\em SIAM Journal on Scientific Computing}, 37(3):A1451--A1474, 2015.
+      
+    \bibitem[Amestoy et al., 2019]{ablm:17b} P.~R. Amestoy, A.~Buttari, J.-Y. L'Excellent, and T.~Mary. {Performance and Scalability of the Block Low-Rank Multifrontal Factorization on Multicore Architectures}. {\em ACM Transactions on Mathematical Software}, 45:2:1--2:26, 2019.
 
 \end{thebibliography}
 
@@ -279,3 +335,8 @@ Ongoing work includes several tasks aimed at finalizing the integration and asse
 \label{MyLastPage}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
