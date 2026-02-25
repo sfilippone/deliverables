@@ -106,9 +106,10 @@ Approval Date: [Date]
     This architecture utilizes HBM3e memory, providing a high-bandwidth memory subsystem. Using the Kokkos-based Stream Triad benchmark, we measured an 
     effective memory bandwidth of 3.65 TB/s, which serves as a reference point for the high-bandwidth capabilities of the GH200 platform.
 
-    As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second) at specific polynomial orders.
-    In contrast, BK3 (see Figure \ref{fig:N_BK3}) plateaus at approximately 25 GDOF/s. A consistent trend across these kernels is the underperformance of low-order elements ($p=1, p=2$).
-    This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread warp, leading to suboptimal hardware utilization.
+    As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second)
+    at specific polynomial orders using single-precision arithmetic (FP32). In contrast, BK3 (see Figure \ref{fig:N_BK3}) plateaus at approximately 25 GDOF/s. A consistent trend across these kernels is the underperformance 
+    of low-order elements ($p=1, p=2$). This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread warp,
+    leading to suboptimal hardware utilization.
 
     \begin{figure}
         \centering
