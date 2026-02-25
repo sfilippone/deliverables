@@ -103,7 +103,54 @@ Approval Date: [Date]
 This section documents upstream (deal.II) development items tracked with the \texttt{dealii-x} label and summarises recent auxiliary developments relevant to reduced (and mixed-dimensional) modelling workflows. This report discusses (i) Polygonal discretisation workstream in Section~\ref{sec:section4}, (ii) specific PSCToolkit/AMG4PSBLAS integration in Section~\ref{sec:section5}, and (iii) advanced MUMPS factorisation features in Section~\ref{sec:section6}. To avoid repetition, we focus here on \emph{complementary} contributions: a coherent series of VTK interoperability utilities in \texttt{deal.II} (from VTK data ingestion to direct conversion between \texttt{vtkUnstructuredGrid} and \texttt{Triangulation}), and supporting improvements in related infrastructure that enable robust data exchange for dealii-X applications.
 
 \subsection{{Bakeoff kernels}}
+    We have expanded the Matrix-Free Operator evaluation framework by improving Kokkos-based Bake-Off kernels with different variants.
+    These variants, which build upon the groundwork of Deliverables 1.3 and 3.2 benchmark implementations, leverage two-dimensional thread structures to
+    maximize data locality and hardware efficiency. These implementations, available at \url{https://github.com/dealii-X/benchmarks} under sum\_factorization folder,
+    utilize a two-dimensional thread block structure to significantly enhance thread-wise data locality and throughput. Additionally,
+    C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling.
 
+    Performance evaluations were conducted on the NVIDIA GH200 Grace Hopper Superchip, which integrates an ARM-based 72-core Grace CPU with a Hopper architecture GPU.
+    This architecture utilizes HBM3e memory, providing a high-bandwidth memory subsystem. Using the Kokkos-based Stream Triad benchmark, we measured an 
+    effective memory bandwidth of 3.65 TB/s, which serves as a reference point for the high-bandwidth capabilities of the GH200 platform.
+
+    As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second) at specific polynomial orders.
+    In contrast, BK3 (see Figure \ref{fig:N_BK3}) plateaus at approximately 25 GDOF/s. A consistent trend across these kernels is the underperformance of low-order elements ($p=1, p=2$).
+    This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread warp, leading to suboptimal hardware utilization.
+
+    \begin{figure}
+        \centering
+        \begin{subfigure}{0.45\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{fig/N_BK1_2DS.pdf}
+            \caption{}
+            \label{subfig:N_BK1_2DS}
+        \end{subfigure}
+        \hspace{0.3cm}
+        \begin{subfigure}{0.45\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{fig/N_BK5_2DS.pdf}
+            \caption{}
+            \label{subfig:N_BK5_2DS}
+        \end{subfigure}
+
+        \caption{
+            (\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on GH200.
+            (\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on GH200.
+        }
+        \label{fig:N_BK1_BK5}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.45\linewidth]{fig/N_BK3_2DS.pdf}
+        
+        \caption{
+            BK3 with 2D Thread Blocks Kernels on GH200.
+            }
+        \label{fig:N_BK3}
+    \end{figure}
+
+    
 \subsection{{Bakeoff problems}}
 
 \subsection{{Multigrid+DD(?)}}
