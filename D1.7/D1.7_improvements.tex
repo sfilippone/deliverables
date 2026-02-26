@@ -96,16 +96,15 @@ Approval Date: [Date]
 
 \newpage
 
+
 \section{{Extending and improving the exascale capabilities of deal.II}}
-\label{sec:section2}
+\label{sec:section1}
 
-
-This section documents upstream (deal.II) development items tracked with the \texttt{dealii-x} label and summarises recent auxiliary developments relevant to reduced (and mixed-dimensional) modelling workflows. This report discusses (i) Polygonal discretisation workstream in Section~\ref{sec:section4}, (ii) specific PSCToolkit/AMG4PSBLAS integration in Section~\ref{sec:section5}, and (iii) advanced MUMPS factorisation features in Section~\ref{sec:section6}. To avoid repetition, we focus here on \emph{complementary} contributions: a coherent series of VTK interoperability utilities in \texttt{deal.II} (from VTK data ingestion to direct conversion between \texttt{vtkUnstructuredGrid} and \texttt{Triangulation}), and supporting improvements in related infrastructure that enable robust data exchange for dealii-X applications.
 
 \subsection{{Bakeoff kernels}}
     We have expanded the Matrix-Free Operator evaluation framework by improving Kokkos-based Bake-Off kernels with different variants.
     These variants, which build upon the groundwork of Deliverables 1.3 and 3.2 benchmark implementations, leverage two-dimensional thread structures to
-    maximize data locality and hardware efficiency. These implementations, available at \url{https://github.com/dealii-X/benchmarks} under sum\_factorization folder,
+    maximize data locality and hardware efficiency. These implementations, available at dealii-X benchmarks repository \footnote{\url{https://github.com/dealii-X/benchmarks}} under sum\_factorization folder,
     utilize a two-dimensional thread block structure to significantly enhance thread-wise data locality and throughput. Additionally,
     C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling.
 
@@ -156,6 +155,12 @@ This section documents upstream (deal.II) development items tracked with the \te
 
 \subsection{{Multigrid+DD(?)}}
 
+
+\section{{Pre-exascale capabilities of deal.II}}
+\label{sec:section2}
+
+
+This section documents upstream (deal.II) development items tracked with the \texttt{dealii-x} label and summarises recent auxiliary developments relevant to reduced (and mixed-dimensional) modelling workflows. This report discusses (i) Polygonal discretisation workstream in Section~\ref{sec:section4}, (ii) specific PSCToolkit/AMG4PSBLAS integration in Section~\ref{sec:section5}, and (iii) advanced MUMPS factorisation features in Section~\ref{sec:section6}. To avoid repetition, we focus here on \emph{complementary} contributions: a coherent series of VTK interoperability utilities in \texttt{deal.II} (from VTK data ingestion to direct conversion between \texttt{vtkUnstructuredGrid} and \texttt{Triangulation}), and supporting improvements in related infrastructure that enable robust data exchange for dealii-X applications.
 
 A key outcome is an expanded, reusable path for importing and reusing meshes and solution fields from external toolchains (VTK-based) inside deal.II-based dealii-X applications, reducing friction for multi-physics coupling, parameter studies, and reduced modelling workflows where repeated transfer between meshing/visualisation pipelines and solver back-ends is common. The work is coordinated via a dedicated meta-issue (\issue{19056}) and realised through a sequence of PRs (beginning with \pr{19023} and \pr{19024}). In addition, we briefly note the status of two research-code repositories that support reduced/mixed-dimensional modelling pipelines for dealii-X: the ``Reduced Lagrange Multipliers'' repository, currently in use by the FAU group for brain brain simulations related to MRE studies and by the WIAS group for Liver simulations, and the ``Reduced dimensional blood flow simulator'', currently under active development, and to be coupled with Liver and Brain simulations.
 
