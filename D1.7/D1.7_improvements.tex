@@ -109,7 +109,7 @@ Approval Date: [Date]
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
-    \item Section \ref{sec:section2}: Pre-exascale capabilities of deal.II
+    \item Section \ref{sec:section2}: Exascale capabilities of deal.II
     \item Section \ref{sec:section3}: Pre-exascale modules of deal.II
     \item Section \ref{sec:section4}: Polygonal discretization module
     \item Section \ref{sec:section5}: Integration of PSCToolkit
@@ -119,61 +119,150 @@ Approval Date: [Date]
 \newpage
 
 
-\section{{Extending and improving the exascale capabilities of deal.II}}
+\section{{Exascale capabilities of deal.II}}
 \label{sec:section1}
 
+ 
 
 \subsection{{Bakeoff kernels}}
+
+
     We have expanded the Matrix-Free Operator evaluation framework by improving Kokkos-based Bake-Off kernels with different variants.
-    These variants, which build upon the groundwork of Deliverables 1.3 and 3.2 benchmark implementations, leverage two-dimensional thread structures to
-    maximize data locality and hardware efficiency. These implementations, available at dealii-X benchmarks repository \footnote{\url{https://github.com/dealii-X/benchmarks}} under sum\_factorization folder,
-    utilize a two-dimensional thread block structure to significantly enhance thread-wise data locality and throughput. Additionally,
-    C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling.
+	These variants, which build upon the groundwork of Deliverables 1.3 and 3.2 benchmark implementations, leverage two-dimensional thread structures to maximize data locality and hardware efficiency. These implementations, available at dealii-X benchmarks repository \footnote{\url{https://github.com/dealii-X/benchmarks}} under sum\_factorization folder,
+	utilize a two-dimensional thread block structure to significantly enhance thread-wise data locality and throughput. Additionally,
+	C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling.
+	
 
-    Performance evaluations were conducted on the NVIDIA GH200 Grace Hopper Superchip, which integrates an ARM-based 72-core Grace CPU with a Hopper architecture GPU.
-    This architecture utilizes HBM3e memory, providing a high-bandwidth memory subsystem. Using the Kokkos-based Stream Triad benchmark, we measured an 
-    effective memory bandwidth of 3.65 TB/s, which serves as a reference point for the high-bandwidth capabilities of the GH200 platform.
+	Performance evaluations were conducted on the NVIDIA GH200 Grace Hopper Superchip, which integrates an ARM-based 72-core Grace CPU with a Hopper architecture GPU.
+	This architecture utilizes HBM3e memory, providing a high-bandwidth memory subsystem. Using the Kokkos-based Stream Triad benchmark, we measured an 
+	effective memory bandwidth of 3.65 TB/s, which serves as a reference point for the high-bandwidth capabilities of the GH200 platform.
 
-    As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second)
-    at specific polynomial orders using single-precision arithmetic (FP32). In contrast, BK3 (see Figure \ref{fig:N_BK3}) plateaus at approximately 25 GDOF/s. A consistent trend across these kernels is the underperformance 
-    of low-order elements ($p=1, p=2$). This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread warp,
-    leading to suboptimal hardware utilization.
+	As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second)
+	at specific polynomial orders using single-precision arithmetic (FP32). In contrast, BK3 (see Figure \ref{fig:N_BK3}) plateaus at approximately 25 GDOF/s. A consistent trend across these kernels is the underperformance 
+	of low-order elements ($p=1, p=2$). This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread warp,
+	leading to suboptimal hardware utilization.
+	
+	   \newpage
+		%NVIDIA
+	\begin{figure}[ht!]
+		\centering
+		\begin{subfigure}{0.45\linewidth}
+			\centering
+			\includegraphics[width=\linewidth]{fig/N_BK1_2DS.pdf}
+			\caption{}
+			\label{subfig:N_BK1_2DS}
+		\end{subfigure}
+		\hspace{0.3cm}
+		\begin{subfigure}{0.45\linewidth}
+			\centering
+			\includegraphics[width=\linewidth]{fig/N_BK5_2DS.pdf}
+			\caption{}
+			\label{subfig:N_BK5_2DS}
+		\end{subfigure}
+		
+		\caption{
+			(\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on GH200.
+			(\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on GH200.
+		}
+		\label{fig:N_BK1_BK5}
+	\end{figure}
+	
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[width=0.45\linewidth]{fig/N_BK3_2DS.pdf}
+		
+		\caption{
+			BK3 with 2D Thread Blocks Kernels on GH200.
+		}
+		\label{fig:N_BK3}
+	\end{figure}
 
-    \begin{figure}
-        \centering
-        \begin{subfigure}{0.45\linewidth}
-            \centering
-            \includegraphics[width=\linewidth]{fig/N_BK1_2DS.pdf}
-            \caption{}
-            \label{subfig:N_BK1_2DS}
-        \end{subfigure}
-        \hspace{0.3cm}
-        \begin{subfigure}{0.45\linewidth}
-            \centering
-            \includegraphics[width=\linewidth]{fig/N_BK5_2DS.pdf}
-            \caption{}
-            \label{subfig:N_BK5_2DS}
-        \end{subfigure}
-
-        \caption{
-            (\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on GH200.
-            (\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on GH200.
-        }
-        \label{fig:N_BK1_BK5}
+       
+   \newpage
+   
+ 
+        %INTEL
+    \begin{figure}[ht!]
+    	\centering
+    	\begin{subfigure}{0.45\linewidth}
+    		\centering
+    		\includegraphics[width=\linewidth]{fig/I_BK1_2DS.pdf}
+    		\caption{}
+    		\label{subfig:I_BK1_2DS}
+    	\end{subfigure}
+    	\hspace{0.3cm}
+    	\begin{subfigure}{0.45\linewidth}
+    		\centering
+    		\includegraphics[width=\linewidth]{fig/I_BK5_2DS.pdf}
+    		\caption{}
+    		\label{subfig:I_BK5_2DS}
+    	\end{subfigure}
+    	
+    	\caption{
+    		(\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on Intel GPU Max 1550.
+    		(\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on Intel GPU Max 1550.
+    	}
+    	\label{fig:I_BK1_BK5}
     \end{figure}
-
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.45\linewidth]{fig/N_BK3_2DS.pdf}
-        
-        \caption{
-            BK3 with 2D Thread Blocks Kernels on GH200.
-            }
-        \label{fig:N_BK3}
-    \end{figure}
-
     
-\subsection{{Bakeoff problems}}
+    \begin{figure}[ht!]
+    	\centering
+    	\includegraphics[width=0.45\linewidth]{fig/I_BK3_2D.pdf}
+    	
+    	\caption{
+    		BK3 with 2D Thread Blocks Kernels on Intel GPU Max 1550.
+    	}
+    	\label{fig:I_BK3}
+    \end{figure}
+    
+    
+    
+  
+In Figure \ref{fig:I_BK1_BK5} and Figure \ref{fig:I_BK3}, initial results on the Intel Data Center GPU are shown and they indicate yielding lower 
+throughput values because of the lower global memory bandwidth. Alternatively, unlike NVIDIA's fixed warp size of 32, Intel's flexible 
+sub-group size (16–32) allows the lower polynomial order elements to perform as well as the high-order ones.
+
+    \newpage
+
+
+    %AMD
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}{0.45\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{fig/A_BK1_2DS.pdf}
+		\caption{}
+		\label{subfig:A_BK1_2DS}
+	\end{subfigure}
+	\hspace{0.3cm}
+	\begin{subfigure}{0.45\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{fig/A_BK5_2D.pdf}
+		\caption{}
+		\label{subfig:A_BK5_2D}
+	\end{subfigure}
+	
+	\caption{
+		(\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on AMD Instinct MI210.
+		(\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on AMD Instinct MI210.
+	}
+	\label{fig:A_BK1_BK5}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.45\linewidth]{fig/A_BK3_2DS.pdf}
+	
+	\caption{
+		BK3 with 2D Thread Blocks Kernels on AMD Instinct MI210.
+	}
+	\label{fig:A_BK3}
+\end{figure}
+
+	As shown in Figures \ref{fig:A_BK1_BK5} and \ref{fig:A_BK3}, initial results on the AMD Instinct MI210 demonstrate low occupancy for low-order elements ($p=1,2$) 
+due to the fixed, high wavefront size (64), similar to the behavior observed on the GH200. Another key observation from the figures is that despite having similar bandwidth values—1.25 TB/s for the AMD 
+MI210 and 1 TB/s for the Intel 1550— the AMD GPU nearly doubles the throughput across all benchmarks.
+
 
 \subsection{Multigrid algorithms on GPUs}
 
@@ -186,7 +275,7 @@ with other research in deal.II, particularly
 \url{https://github.com/dealii/dealii/pull/18922} and the organizational commit
 \url{https://github.com/dealii/dealii/pull/19000} that prepares the
 infrastructure. The significant work concerning the local algorithms that
-entirely resides on the GPU have been made within the RUB team for dealii-X.
+entirely resides on the GPU have been made within the RUB team for dealii-X. The later include \url{https://github.com/dealii/dealii/pull/19347} and \url{https://github.com/dealii/dealii/pull/19051}.
 
 With these preparations, we have ported the library deal.II to the JUPITER
 system at J\"ulich Supercomputing Centre (JSC). Our code is capable of using
@@ -214,6 +303,8 @@ performance across a wide range of problems. We also include a result for
 polynomial degree $p=4$ run on 2 nodes, where an increase in latency is
 observed. This is caused by inter-node communication, whose improvement is a
 topic of ongoing research.
+
+\newpage
 
 \pgfplotstableread{
  cells     dofs    mv_outer  mv_inner   cg_time  cg_its cg_reduction
@@ -478,7 +569,9 @@ Cartesian~\cite{KronbichlerKormann2012} that significantly reduces the memory
 transfer. Furthermore, it uses advanced schemes to reduce the memory transfer,
 allowing the CPU architecture to compete with the formally much more powerful
 GPU. The point of the CPU result is to set a challenging bar to be exceeded
-for our GPU kernels. Our main ongoing activities are to improve the tuning on
+for our GPU kernels.
+
+Our main ongoing activities are to improve the tuning on
 JUPITER further, because we expect a larger advantage in the throughput regime
 where a JUPITER node is already faster, and becase we want to improve the
 throughput also for smaller sizes. An expected result is that the CPU system
@@ -642,9 +735,8 @@ these numbers, which will in turn also improve the scalability.
   \label{fig:jupiter_weak}
 \end{figure}
   
-
-\subsection{{Multigrid+DD(?)}}
-
+  
+\newpage  
 
 \section{{Pre-exascale capabilities of deal.II}}
 \label{sec:section2}
