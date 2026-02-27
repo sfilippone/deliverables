@@ -22,67 +22,80 @@
 %\usepackage[T1]{fontenc}
 
 \usepackage{listings}
-\lstset{basicstyle=\ttfamily,
-	showstringspaces=false,
-	commentstyle=\color{red},
-	keywordstyle=\color{blue},
-	emph={%  
-		psb_init, psb_info, psb_exit,%
-		psb_get_mpi_comm,psb_get_mpi_rank,%
-		psb_snd,psb_rcv,%
-		psb_bcast,
-		psb_sum,
-		psb_amx,
-		psb_amn,
-		psb_max,
-		psb_min,
-                psb_scan_sum,
-                psb_exscan_sum,
-		psb_geaxpby,
-		psb_spmm,
-		psb_gedot,
-		psb_genrm2,
-		psb_halo,
-		psb_cdall,
-		psb_sum,
-		psb_cdins,
-		psb_cdasb,
-		psb_spall,
-		psb_spins,
-		psb_spasb,
-		psb_sprn,
-		psb_sp_clone,
-		psb_geall,
-		psb_geins,
-		psb_geasb,
-		psb_glob_to_loc,
-		psb_loc_to_glob,
-		psb_krylov,
-		psb_precinit,
-		psb_precbld,
-		psb_geamax,
-		psb_geasum,
-		psb_spnrmi,
-		psb_spsm,
-		mm_array_write,
-		mm_mat_write,
-		mm_array_read,
-		mm_mat_read,
-		hb_read,
-		hb_write,
-		init,
-		set,
-		hierarchy_build,
-		smoothers_build,
-		build,
-		cscnv,
-		apply,
-		free,
-		descr,
-                mode,
-                request
-	},emphstyle={\color[HTML]{E4605B}}%
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\scriptsize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    showstringspaces=false
 }
+
+% \lstset{basicstyle=\ttfamily,
+% 	showstringspaces=false,
+% 	commentstyle=\color{red},
+% 	keywordstyle=\color{blue},
+% 	emph={%  
+% 		psb_init, psb_info, psb_exit,%
+% 		psb_get_mpi_comm,psb_get_mpi_rank,%
+% 		psb_snd,psb_rcv,%
+% 		psb_bcast,
+% 		psb_sum,
+% 		psb_amx,
+% 		psb_amn,
+% 		psb_max,
+% 		psb_min,
+%                 psb_scan_sum,
+%                 psb_exscan_sum,
+% 		psb_geaxpby,
+% 		psb_spmm,
+% 		psb_gedot,
+% 		psb_genrm2,
+% 		psb_halo,
+% 		psb_cdall,
+% 		psb_sum,
+% 		psb_cdins,
+% 		psb_cdasb,
+% 		psb_spall,
+% 		psb_spins,
+% 		psb_spasb,
+% 		psb_sprn,
+% 		psb_sp_clone,
+% 		psb_geall,
+% 		psb_geins,
+% 		psb_geasb,
+% 		psb_glob_to_loc,
+% 		psb_loc_to_glob,
+% 		psb_krylov,
+% 		psb_precinit,
+% 		psb_precbld,
+% 		psb_geamax,
+% 		psb_geasum,
+% 		psb_spnrmi,
+% 		psb_spsm,
+% 		mm_array_write,
+% 		mm_mat_write,
+% 		mm_array_read,
+% 		mm_mat_read,
+% 		hb_read,
+% 		hb_write,
+% 		init,
+% 		set,
+% 		hierarchy_build,
+% 		smoothers_build,
+% 		build,
+% 		cscnv,
+% 		apply,
+% 		free,
+% 		descr,
+%                 mode,
+%                 request
+% 	},emphstyle={\color[HTML]{E4605B}}%
+% }
 
 \definecolor{keycolor}{RGB}{172, 42, 42}
 \definecolor{mbleu}{RGB}{64,96,127}
@@ -240,7 +253,8 @@ for details.
 \subsection{{Purpose of the Document}}
 The purpose of this document is to make available in deliverable
 format the tutorial presentations given at the dealii-X winter school event at
-SISSA on Dec. 11th and 12th, 2025.
+SISSA on Dec. 11th and 12th, 2025. The present tutorial program can be found
+at \url{https://github.com/psctoolkit/dealii/blob/configure_amg4psblas/examples/benchmark}.
 
 \section{PSCToolkit: PSBLAS 3.9 \& AMG4PSBLAS 1.2 Tutorial}
 
@@ -265,27 +279,86 @@ deal.II library, and we focus instead only on the minor modifications required t
 yields a symmetric positive definite linear system, we use the conjugate gradient method preconditioned by one V-cycle of the algebraic
 multigrid preconditioner implemented by AMG4PSBLAS. Details about the setup of the preconditioner will be presented later.
 
-\subsection{Include files and setup}
-In addition to classical deal.II include files, the tutorial program includes the headers
-files \texttt{psctoolkit\_wrappers.h}, which contains the needed declarations common to all
-linear algebra backends.
+\subsection{Include files and problem setup}
+In addition to classical deal.II include files, the tutorial program includes
+the headers which contains the interface common to all linear algebra
+backends used in the deal.II library.
+
+\begin{lstlisting}[language=C++,caption=New header files]
+#include <deal.II/lac/psblas_precondition.h>
+#include <deal.II/lac/psblas_sparse_matrix.h>
+#include <deal.II/lac/psblas_vector.h>
+\end{lstlisting}
+
+In addition, the tutorial program supports parameter files that can be used at runtime
+to configure the details of the problem and the solver without recompiling. These
+parameter files allow the user to control, among other settings:
+\begin{itemize}\itemsep0pt\parskip0pt
+  \item the number of refinement cycles and whether adaptive mesh refinement (AMR) is enabled,
+  \item the solver tolerances (relative and absolute) for the iterative linear solver,
+  \item the details of the AMG preconditioner, such as coarsening strategy, smoother type,
+        and number of smoothing steps.
+\end{itemize}
+
+As common in tutorial programs, the triangulation, system matrix, right-hand side vector, and solution vector are
+declared as class members of the main class, and the setup of the linear system is performed in a dedicated
+member function. The main difference with respect to a standard tutorial program
+is that the system matrix and vectors are declared using the PSBLAS wrappers.
+
+\begin{lstlisting}[language=C++, caption={Class declaration (only PSCToolkit-specific members shown).}]
+template <int dim>
+class LaplaceProblem
+{
+public:
+  // declaration of constructors and run()
+
+private:
+  // data structures for triangulation, degrees of freedom, etc. as in step-40
+
+  PSCToolkit::SparseMatrix<double> system_matrix;
+  PSCToolkit::Vector<double>       locally_relevant_solution;
+  PSCToolkit::Vector<double>       system_rhs;
+};
+\end{lstlisting}
+
+
+The allocation of matrices and vectors are performed in the \texttt{setup\_system()} member function, which
+is called at the end of each refinement cycle. The user interface is identical to the one of the other linear
+algebra classes: we first need to acquire information about the MPI communicator and the degrees of freedom owned\footnote{Plus some so-called "ghost" or "halo" indices, i.e. indices owned by neighboring processes.} by
+the current process. Then, the \texttt{reinit()} member function performs the
+allocation of distributed sparse matrices and vectors.
+
+\begin{lstlisting}[language=C++, caption={Setup of the linear system and vectors.}]
+template <int dim>
+void LaplaceProblem<dim>::setup_system()
+{
+
+  locally_owned_dofs   = dof_handler.locally_owned_dofs();
+  locally_relevant_dofs =
+    DoFTools::extract_locally_relevant_dofs(dof_handler);
+
+  locally_relevant_solution.reinit(locally_owned_dofs,
+                                   locally_relevant_dofs,
+                                   mpi_communicator);
+  system_rhs.reinit(locally_owned_dofs, mpi_communicator);
+
+  PSCToolkit::SparsityPattern sparsity_pattern(locally_owned_dofs,
+                                               mpi_communicator);
+  system_matrix.reinit(sparsity_pattern, mpi_communicator);
+  system_matrix.reinit(locally_owned_dofs, locally_owned_dofs, dsp,
+                       mpi_communicator);
+}
+\end{lstlisting}
 
 
 
-
-
-
-
-
-
-
-
-We report in the following table the parameters used during the setup of the preconditioner.
-
+\subsection{Solver and preconditioner setup}
 
 Iteration counts obtained with continuous $\mathcal{Q}^1$ finite elements on quadrilateral and hexahedral meshes, respectively, for
 the variable-coefficient Poisson problem iteration counts of the AMG4PSBLAS preconditioner.
 
+
+We report in the following table the parameters used during the setup of the preconditioner.
 
 % \label{sec:section2}
 % \begin{center}
@@ -602,10 +675,14 @@ the variable-coefficient Poisson problem iteration counts of the AMG4PSBLAS prec
 %   \includegraphics[width=.95\textwidth]{tutorial-125.eps}\\[2\baselineskip]
 %   \includegraphics[width=.95\textwidth]{tutorial-126.eps}
 % \end{center}
-\newpage
 
 
 % \section{{[Section Title]}}
 % \label{sec:section3}
+
+
+
+
+\label{MyLastPage}
 
 \end{document}
