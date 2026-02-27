@@ -102,15 +102,18 @@ Approval Date: [Date]
     utilize a two-dimensional thread block structure to significantly enhance thread-wise data locality and throughput. Additionally,
     C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling.
 
-    Performance evaluations were conducted on the NVIDIA GH200 Grace Hopper Superchip, which integrates an ARM-based 72-core Grace CPU with a Hopper architecture GPU.
-    This architecture utilizes HBM3e memory, providing a high-bandwidth memory subsystem. Using the Kokkos-based Stream Triad benchmark, we measured an 
-    effective memory bandwidth of 3.65 TB/s, which serves as a reference point for the high-bandwidth capabilities of the GH200 platform.
+    Performance evaluations were conducted on the Intel® Data Center GPU Max 1550 and AMD Instinct MI210 GPUs from the Leibniz Rechenzentrum, and the NVIDIA GH200 Superchip
+    from the JUPITER supercomputer. The NVIDIA GH200 Grace Hopper Superchip integrates an ARM-based 72-core Grace CPU with a Hopper architecture GPU. This architecture utilizes
+    HBM3e memory, providing a high-bandwidth memory subsystem. Using the Kokkos-based Stream Triad benchmark, we measured an effective memory bandwidth of 3.65 TB/s, which 
+    serves as a reference point for the high-bandwidth capabilities of the GH200 platform. On the other hand, the Intel data center GPU, configured with a single tile, had 
+    an effective global memory bandwidth measured at 1 TB/s with the same benchmark. The AMD Instinct MI210 reaches 1.25 TB/s bandwidth under the same benchmark conditions.
 
-    As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second)
+    As illustrated in Figure \ref{fig:N_BK1_BK5}, preliminary results on GH200 indicate that BK1 and BK5 achieve peak throughputs approaching 90 GDOF/s (billion degrees of freedom per second)
     at specific polynomial orders using single-precision arithmetic (FP32). In contrast, BK3 (see Figure \ref{fig:N_BK3}) plateaus at approximately 25 GDOF/s. A consistent trend across these kernels is the underperformance 
-    of low-order elements ($p=1, p=2$). This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread warp,
-    leading to suboptimal hardware utilization.
+    of low-order elements ($p=1, p=2$). This bottleneck is primarily attributed to low occupancy; the low thread count per thread block fails to saturate the standard 32-thread
+    warp, leading to suboptimal hardware utilization.
 
+    %NVIDIA
     \begin{figure}
         \centering
         \begin{subfigure}{0.45\linewidth}
@@ -144,7 +147,85 @@ Approval Date: [Date]
         \label{fig:N_BK3}
     \end{figure}
 
-    
+    As shown in Figure \ref{fig:I_BK1_BK5} and Figure \ref{fig:I_BK3}, initial results on the Intel Data Center GPU yield lower 
+    throughput values because of the lower global memory bandwidth. Alternatively, unlike NVIDIA's fixed warp size of 32, Intel's flexible 
+    sub-group size (16–32) allows the lower polynomial order elements to perform as well as the high-order ones.
+
+    %INTEL
+    \begin{figure}
+        \centering
+        \begin{subfigure}{0.45\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{fig/I_BK1_2DS.pdf}
+            \caption{}
+            \label{subfig:I_BK1_2DS}
+        \end{subfigure}
+        \hspace{0.3cm}
+        \begin{subfigure}{0.45\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{fig/I_BK5_2DS.pdf}
+            \caption{}
+            \label{subfig:I_BK5_2DS}
+        \end{subfigure}
+
+        \caption{
+            (\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on Intel GPU Max 1550.
+            (\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on Intel GPU Max 1550.
+        }
+        \label{fig:I_BK1_BK5}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.45\linewidth]{fig/I_BK3_2D.pdf}
+        
+        \caption{
+            BK3 with 2D Thread Blocks Kernels on Intel GPU Max 1550.
+            }
+        \label{fig:I_BK3}
+    \end{figure}
+
+    As shown in Figures \ref{fig:A_BK1_BK5} and \ref{fig:A_BK3}, initial results on the AMD Instinct MI210 demonstrate low occupancy for low-order elements ($p=1,2$) 
+    due to the fixed, high wavefront size (64), similar to the behavior observed on the GH200. Another key observation from the figures is that despite having similar bandwidth values—1.25 TB/s for the AMD 
+    MI210 and 1 TB/s for the Intel 1550— the AMD GPU nearly doubles the throughput across all benchmarks.
+
+    %AMD
+    \begin{figure}
+        \centering
+        \begin{subfigure}{0.45\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{fig/A_BK1_2DS.pdf}
+            \caption{}
+            \label{subfig:A_BK1_2DS}
+        \end{subfigure}
+        \hspace{0.3cm}
+        \begin{subfigure}{0.45\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{fig/A_BK5_2D.pdf}
+            \caption{}
+            \label{subfig:A_BK5_2D}
+        \end{subfigure}
+
+        \caption{
+            (\subref{subfig:N_BK1_2DS}) BK1 with 2D Thread Blocks Kernels on AMD Instinct MI210.
+            (\subref{subfig:N_BK5_2DS}) BK5 with 2D Thread Blocks Kernels on AMD Instinct MI210.
+        }
+        \label{fig:A_BK1_BK5}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.45\linewidth]{fig/A_BK3_2DS.pdf}
+        
+        \caption{
+            BK3 with 2D Thread Blocks Kernels on AMD Instinct MI210.
+            }
+        \label{fig:A_BK3}
+    \end{figure}
+
+
+
+\newpage
 \subsection{{Bakeoff problems}}
 
 \subsection{{Multigrid+DD(?)}}
