@@ -170,6 +170,7 @@
 \usepackage{colortbl}%
 \newcommand{\myrowcolour}{\rowcolor[gray]{0.925}}
 \usepackage{booktabs}
+\usepackage{subcaption}
 
 %\usepackage{pgfpages}
 \usepackage{pgfmorepages}
@@ -264,9 +265,9 @@ to demonstrate the correctness of the new interface, we describe here a tutorial
 how to use the wrappers in a simple but illustrative test case, in the spirit of classical
 tutorials programs of the deal.II library\footnote{\url{https://dealii.org/developer/doxygen/deal.II/Tutorial.html}}.
 
-We consider the following variable-coefficient Poisson problem on a domain $\Omega \subset \mathbb{R}^d$, $d=2,3$:
-$$-\nabla \cdot ( k(x) \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
-with homogeneous Dirichlet boundary conditions on $\partial \Omega$.
+We consider the following variable-coefficient Poisson problem on a bounded polygonal domain $\Omega \subset \mathbb{R}^d$, $d=2,3$:
+$$-\nabla \cdot ( \mathbf{K} \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
+where $\mathbf{K}$ is a symmetric and uniformly positive definite tensor and $u$ satisfies homogeneous Dirichlet boundary conditions on $\partial \Omega$. We discretize the continuous problem with standard nodal Lagrangian $\mathcal{Q}^1$ elements on quadrilateral meshes.
 
 All the preliminary steps involved in a standard finite element pipeline, i.e. mesh generation, partitioning
 of the computational grid among MPI processes, construction of finite element spaces and distribution of
@@ -303,9 +304,9 @@ parameter files allow the user to control, among other settings:
 As common in tutorial programs, the triangulation, system matrix, right-hand side vector, and solution vector are
 declared as class members of the main class, and the setup of the linear system is performed in a dedicated
 member function. The main difference with respect to a standard tutorial program
-is that the system matrix and vectors are declared using the PSBLAS wrappers.
+is that the system matrix and vectors are declared using the PSBLAS wrappers. Listing \ref{lst:class_declaration} shows the code snippet for the class declaration of the main class of the tutorial program, where only the PSCToolkit-specific members are shown.
 
-\begin{lstlisting}[language=C++, caption={Class declaration (only PSCToolkit-specific members shown).}]
+\begin{lstlisting}[language=C++, caption={Class declaration (only PSCToolkit-specific members shown).}, label=lst:class_declaration]
 template <int dim>
 class LaplaceProblem
 {
@@ -326,9 +327,9 @@ The allocation of matrices and vectors are performed in the \texttt{setup\_syste
 is called at the end of each refinement cycle. The user interface is identical to the one of the other linear
 algebra classes: we first need to acquire information about the MPI communicator and the degrees of freedom owned\footnote{Plus some so-called "ghost" or "halo" indices, i.e. indices owned by neighboring processes.} by
 the current process. Then, the \texttt{reinit()} member function performs the
-allocation of distributed sparse matrices and vectors.
+allocation of distributed sparse matrices and vectors. Listing \ref{lst:setup_system} shows the code snippet for the setup of the linear system and vectors.
 
-\begin{lstlisting}[language=C++, caption={Setup of the linear system and vectors.}]
+\begin{lstlisting}[language=C++, caption={Setup of the linear system and vectors.}, label=lst:setup_system]
 template <int dim>
 void LaplaceProblem<dim>::setup_system()
 {
@@ -358,11 +359,155 @@ The implementation of the assembly loop can be found in the \texttt{assemble\_sy
 
 \subsection{Solver and preconditioner setup}
 
-Iteration counts obtained with continuous $\mathcal{Q}^1$ finite elements on quadrilateral and hexahedral meshes, respectively, for
-the variable-coefficient Poisson problem iteration counts of the AMG4PSBLAS preconditioner.
+We finally describe the \texttt{solve()} function, which involves the setup of the linear solver and the preconditioner, as well as the
+solution of the linear system. As previously mentioned, the positive definiteness of the bilinear form
+calls for the use of the preconditioned conjugate gradient (PCG) method. At the solver stage, the interface to PSCToolkit becomes essentially
+transparent to the user: any Krylov subspace solver provided by the native deal.II library can be instantiated
+with PSCToolkit matrix and vector wrappers, since they comply with the linear-algebra interface expected by deal.II. Hence, we use the native
+\texttt{SolverCG} class, which implements the PCG method, and is templated on the vector type, which is in this case \texttt{PSCToolkit::Vector<double>}. The workflow is shown in following Listing \ref{lst:linear_solve} where, for the sake of clarity, we omit the preconditioner settings, which can be found in Listing \ref{lst:preconditioner_setup}.
+
+Among the several available configuration options, we highlight the integration with the MUMPS package (cfr. deliverable D1.7), which can be employed as a direct coarse-level solver within the AMG preconditioner. This combination is particularly effective for achieving robust convergence when algebraic multigrid methods benefit from an accurate solution at the coarsest level. Moreover, efficient parallel-efficient coarse solvers can improve the overall scalability of the solver, especially in contexts where the size of coarse-level system is large.
 
 
-We report in the following table the parameters used during the setup of the preconditioner.
+The solver part therefore remains hence unchanged with respect to standard user codes, and only the AMG4PSBLAS preconditioner settings (coarsening strategy, coarse solver, smoothers, tolerances) may need tuning.
+
+
+\begin{lstlisting}[language=C++,caption={Native SolverCG class with PSCToolkit data structures.}, label=lst:linear_solve]
+template <int dim>
+void LaplaceProblem<dim>::solve()
+{
+
+  PSCToolkit::Vector<double> completely_distributed_solution(
+    locally_owned_dofs, mpi_communicator);
+  SolverCG<PSCToolkit::Vector<double>> solver(solver_parameters);
+
+  typename PSCToolkit::PreconditionAMG::AdditionalData prec_data;
+  // fill prec_data with the desired settings for the AMG preconditioner
+  PSCToolkit::PreconditionAMG preconditioner;
+  preconditioner.initialize(system_matrix, prec_data);
+  solver.solve(system_matrix,
+              completely_distributed_solution,
+              system_rhs,
+              preconditioner);
+    }
+\end{lstlisting}
+
+
+
+
+\begin{lstlisting}[caption={Excerpt of parameter file with AMG preconditioner settings.},label=lst:preconditioner_setup]
+subsection Laplace Problem<2>
+  // problem-related parameters (refinement cycles, boundary ids, etc.)
+
+  subsection AMG control
+    set Aggregation filter             = FILTER
+    set Aggregation threshold          = 1e-2
+    set Aggregation type               = SOC1
+    set Aggregation size               = 8
+    set Coarse matrix type             = DIST
+    set Coarse solver                  = MUMPS
+    set Cycle type                     = VCYCLE
+    set Number of cycles               = 1
+    set Parallel aggregation algorithm = DECOUPLED
+    set Prolongator aggregation        = SMOOTHED
+    set Smoother sweeps                = 3
+    set Smoother type                  = FBGS
+    set Verbose AMG info               = true
+  end
+end
+\end{lstlisting}
+
+
+
+
+\subsection{Numerical experiment}
+
+We consider the $\mathcal{Q}^1$ discretization of the anisotropic Poisson problem with diffusion tensor
+\begin{equation}
+  \mathbf{K}
+  =
+  \begin{pmatrix}
+    \cos^2\theta + \varepsilon \sin^2\theta
+     &
+    (1-\varepsilon)\sin\theta\cos\theta
+    \\
+    (1-\varepsilon)\sin\theta\cos\theta
+     &
+    \sin^2\theta + \varepsilon \cos^2\theta
+  \end{pmatrix},
+\end{equation} and right-hand side $f=1$. The CG solver is stopped when the relative residual is reduced by a factor of $10^{-6}$, or when the absolute residual is smaller than $10^{-10}$.
+
+Figure \ref{fig:AMR} shows the solution obtained with several AMR cycles starting from a Cartesian grid, and letting the AMR be driven by a suitable error estimator. The anisotropy parameters are $\varepsilon = 100$ and $\theta = \frac{\pi}{6}$, which yield a challenging test case for algebraic multigrid methods, especially when AMR is employed.
+
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol0.eps}
+    \caption{$\ell = 0$}
+  \end{subfigure}\hfil
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol1.eps}
+    \caption{$\ell = 1$}
+  \end{subfigure}\hfil
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol2.eps}
+    \caption{$\ell = 2$}
+  \end{subfigure}\hfil
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol3.eps}
+    \caption{$\ell = 3$}
+  \end{subfigure}
+
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol4.eps}
+    \caption{$\ell = 4$}
+  \end{subfigure}\hfil
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol5.eps}
+    \caption{$\ell = 5$}
+  \end{subfigure}\hfil
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol6.eps}
+    \caption{$\ell = 6$}
+  \end{subfigure}\hfil
+  \begin{subfigure}{0.20\columnwidth}
+    \includegraphics[width=\columnwidth]{sol7.eps}
+    \caption{$\ell = 7$}
+  \end{subfigure}
+  \caption{Example of AMR on a quadrilateral grid for an anisotropic Poisson problem with $\ell = 1,\ldots,7$ levels of refinements from an original tensor product grid $\ell =0$.\label{fig:AMR}}
+\end{figure}
+
+
+Iteration counts obtained with the setup presented in Listing~\ref{lst:preconditioner_setup} are reported in Table~\ref{tab:anisopoisson2D}, where we show the results for the two-dimensional case with several AMR cycles, and for different numbers of MPI processes. Iterations are fairly robust with respect to the number of MPI processes and the AMR level.
+
+\begin{table}[htbp]
+  \centering
+  \footnotesize
+  \begin{tabular}{ccccccccc}
+    \toprule
+          & \multicolumn{8}{c}{AMR level}                                    \\
+    \cmidrule{2-9}
+    $n_p$ & 0                             & 1  & 2  & 3  & 4  & 5  & 6  & 7  \\
+    \midrule
+    1     & 17                            & 20 & 24 & 26 & 31 & 32 & 38 & 39 \\
+    2     & 14                            & 19 & 24 & 26 & 30 & 32 & 38 & 40 \\
+    4     & 8                             & 14 & 21 & 25 & 30 & 31 & 37 & 39 \\
+    8     & 9                             & 10 & 16 & 23 & 29 & 33 & 39 & 39 \\
+    16    & 9                             & 10 & 10 & 16 & 23 & 26 & 36 & 39 \\
+    32    & 9                             & 10 & 10 & 11 & 17 & 25 & 27 & 36 \\
+    64    & 10                            & 10 & 10 & 11 & 11 & 18 & 26 & 27 \\
+    128   & 11                            & 12 & 12 & 10 & 10 & 12 & 19 & 26 \\
+    256   & 11                            & 14 & 12 & 13 & 11 & 12 & 12 & 13 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Iteration count for the anistropic 2D Poisson problem ($\epsilon = 100$, $\theta = \frac{\pi}{6}$) varying number of processes $n_p$ and number of refinement levels.\label{tab:anisopoisson2D}}
+
+\end{table}
+
+% ...existing code...
+
 
 % \label{sec:section2}
 % \begin{center}
