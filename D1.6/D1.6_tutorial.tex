@@ -12,7 +12,7 @@
 \graphicspath{{../common/logos/}{./figures/}{../}}
 
 \usepackage{xspace}
-
+\usepackage{listings}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{1.6}
@@ -176,33 +176,31 @@
 
 % Main Table using the new environment and command
 \begin{deliverableTable}
-    \tableEntry{Deliverable title}{Tutorials based on external libraries}
-    \tableEntry{Deliverable number}{D1.6}
-    \tableEntry{Deliverable version}{0.1}
-    \tableEntry{Date of delivery}{Feb 28th 2026}
-    \tableEntry{Actual date of delivery}{[Actual date]}
-    \tableEntry{Nature of deliverable}{Report/etc.]}
-    \tableEntry{Dissemination level}{Public}
-    \tableEntry{Work Package}{WP1}
-    \tableEntry{Partner responsible}{UNITOV}
+  \tableEntry{Deliverable title}{Tutorials based on external libraries}
+  \tableEntry{Deliverable number}{D1.6}
+  \tableEntry{Deliverable version}{0.1}
+  \tableEntry{Date of delivery}{Feb 28th 2026}
+  \tableEntry{Actual date of delivery}{[Actual date]}
+  \tableEntry{Nature of deliverable}{Report/etc.]}
+  \tableEntry{Dissemination level}{Public}
+  \tableEntry{Work Package}{WP1}
+  \tableEntry{Partner responsible}{UNITOV}
 \end{deliverableTable}
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{This report contains the tutorial on the
-      external library PSCToolkit, delivered to the dealii-X project
-      during the winter school event at SISSA on Dec. 11th and 12th, 2025.}
-    \tableEntry{Keywords}{Linear algebra solvers. Libraries. Data
-      structures.}
+  \tableEntry{Abstract}{This report contains the tutorial on the
+    external library PSCToolkit, delivered to the dealii-X project
+    during the winter school event at SISSA on Dec. 11th and 12th, 2025.}
+  \tableEntry{Keywords}{Linear algebra solvers. Libraries. Data
+    structures.}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{Feb 15th 2026}{Salvatore Filippone}{Initial draft}
-    %\addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    %\addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
-    %\addVersion{1.0}{[Date]}{[Author name]}{Final version}
+  \addVersion{0.1}{Feb 15th 2026}{Salvatore Filippone}{Initial draft}
+  \addVersion{0.2}{Feb 27th 2026}{Marco Feder}{Tutorial program}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -211,10 +209,10 @@ Approval Date: [Date]
 
 \subsection*{{Distribution List}}
 \begin{itemize}
-    \item [] - Project Coordinators (PCs)
-    \item [] - Work Package Leaders (WPLs)
-    \item [] - Steering Committee (SC)
-    \item [] - European Commission (EC)
+  \item [] - Project Coordinators (PCs)
+  \item [] - Work Package Leaders (WPLs)
+  \item [] - Steering Committee (SC)
+  \item [] - European Commission (EC)
 \end{itemize}
 
 \vspace*{2cm}
@@ -229,434 +227,385 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-Work Package 1 is dedicated to the numerical software backbone of 
+Work Package 1 is dedicated to the numerical software backbone of
 dealii-X, enabling the transition to exascale computing. One key
 aspect of the WP is the interfacing with external libraries,
 especially PSCToolkit~\url{https://psctoolkit.github.io} and MUMPS.
 This interface is mostly transparent to the application end-user;
 however, the developers need to acquire a working knowledge of the
-features available and of the performance that can be attained. 
+features available and of the performance that can be attained. The integration
+status of PSCToolkit and MUMPS in dealii-X has been documented in D1.7, which we refer to
+for details.
 
 \subsection{{Purpose of the Document}}
 The purpose of this document is to make available in deliverable
-format the tutorial presentations given at the dealii-X winter school. 
-
-\subsection{{Structure of the Document}}
-\begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
-    \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
-\end{itemize}
-
-\newpage
+format the tutorial presentations given at the dealii-X winter school event at
+SISSA on Dec. 11th and 12th, 2025.
 
 \section{PSCToolkit: PSBLAS 3.9 \& AMG4PSBLAS 1.2 Tutorial}
-\label{sec:section2}
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-001.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-002.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-003.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-004.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-005.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-006.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-007.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-008.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-009.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-010.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-011.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-012.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-013.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-014.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-015.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-016.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-017.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-018.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-019.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-020.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-021.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-022.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-023.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-024.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-025.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-026.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-027.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-028.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-029.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-030.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-031.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-032.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-033.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-034.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-035.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-036.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-037.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-038.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-039.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-040.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-041.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-042.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-043.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-044.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-045.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-046.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-047.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-048.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-049.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-050.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-051.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-052.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-053.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-054.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-055.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-056.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-057.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-058.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-059.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-060.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-061.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-062.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-063.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-064.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-065.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-066.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-067.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-068.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-069.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-070.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-071.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-072.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-073.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-074.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-075.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-076.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-077.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-078.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-079.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-080.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-081.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-082.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-083.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-084.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-085.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-086.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-087.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-088.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-089.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-090.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-091.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-092.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-093.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-094.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-095.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-096.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-097.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-098.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-099.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-100.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-101.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-102.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-103.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-104.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-105.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-106.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-107.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-108.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-109.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-110.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-111.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-112.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-113.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-114.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-115.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-116.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-117.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-118.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-119.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-120.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-121.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-122.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-123.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-124.eps}
-\end{center}
-\newpage
-\begin{center}
-  \includegraphics[width=.95\textwidth]{tutorial-125.eps}\\[2\baselineskip]
-  \includegraphics[width=.95\textwidth]{tutorial-126.eps}
-\end{center}
-\newpage
+
+
+The new interface targets latest release candidates PSBLAS 3.9 and AMG4PSBLAS 1.2. In order
+to demonstrate the correctness of the new interface, we describe here a tutorial program which shows
+how to use the wrappers in a simple but illustrative test case, in the spirit of classical
+tutorials programs of the deal.II library\footnote{\url{https://dealii.org/developer/doxygen/deal.II/Tutorial.html}}.
+
+We consider the following variable-coefficient Poisson problem on a domain $\Omega \subset \mathbb{R}^d$, $d=2,3$:
+$$-\nabla \cdot ( k(x) \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
+with homogeneous Dirichlet boundary conditions on $\partial \Omega$.
+
+All the preliminary steps involved in a standard finite element pipeline, i.e. mesh generation, partitioning
+of the computational grid among MPI processes, construction of finite element spaces and distribution of
+degrees of freedom are orthogonal to the present interface, which only needs to interact
+with deal.II exclusively at the linear algebra level, taking as input the
+assembled distributed sparse matrix and right-hand side vector.
+
+For this reason, we do not report here the details regarding the setup of the problem, which can be found in the tutorial program \texttt{step-40} of the
+deal.II library, and we focus instead only on the minor modifications required to use the PSCToolkit wrappers. Since our problem
+yields a symmetric positive definite linear system, we use the conjugate gradient method preconditioned by one V-cycle of the algebraic
+multigrid preconditioner implemented by AMG4PSBLAS. Details about the setup of the preconditioner will be presented later.
+
+\subsection{Include files and setup}
+In addition to classical deal.II include files, the tutorial program includes the headers
+files \texttt{psctoolkit\_wrappers.h}, which contains the needed declarations common to all
+linear algebra backends.
 
 
 
-\subsection{{[Subsection Title]}}
 
-\subsection{{[Subsection Title]}}
 
+
+
+
+
+
+
+We report in the following table the parameters used during the setup of the preconditioner.
+
+
+Iteration counts obtained with continuous $\mathcal{Q}^1$ finite elements on quadrilateral and hexahedral meshes, respectively, for
+the variable-coefficient Poisson problem iteration counts of the AMG4PSBLAS preconditioner.
+
+
+% \label{sec:section2}
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-001.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-002.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-003.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-004.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-005.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-006.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-007.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-008.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-009.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-010.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-011.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-012.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-013.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-014.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-015.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-016.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-017.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-018.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-019.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-020.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-021.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-022.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-023.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-024.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-025.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-026.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-027.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-028.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-029.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-030.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-031.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-032.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-033.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-034.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-035.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-036.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-037.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-038.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-039.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-040.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-041.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-042.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-043.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-044.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-045.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-046.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-047.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-048.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-049.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-050.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-051.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-052.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-053.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-054.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-055.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-056.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-057.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-058.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-059.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-060.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-061.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-062.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-063.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-064.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-065.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-066.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-067.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-068.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-069.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-070.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-071.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-072.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-073.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-074.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-075.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-076.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-077.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-078.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-079.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-080.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-081.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-082.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-083.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-084.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-085.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-086.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-087.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-088.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-089.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-090.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-091.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-092.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-093.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-094.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-095.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-096.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-097.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-098.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-099.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-100.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-101.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-102.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-103.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-104.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-105.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-106.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-107.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-108.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-109.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-110.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-111.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-112.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-113.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-114.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-115.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-116.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-117.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-118.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-119.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-120.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-121.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-122.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-123.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-124.eps}
+% \end{center}
+% \newpage
+% \begin{center}
+%   \includegraphics[width=.95\textwidth]{tutorial-125.eps}\\[2\baselineskip]
+%   \includegraphics[width=.95\textwidth]{tutorial-126.eps}
+% \end{center}
 \newpage
 
-\section{{[Section Title]}}
-\label{sec:section3}
 
-
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item 
-    \item 
-    \item 
-\end{itemize}
-
-\subsection{{[Subsection Title]}}
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section4}
-
-
-\begin{center}
-    \begin{table}[h!]
-    \small
-    \caption{[Table Caption]}
-    \renewcommand{\arraystretch}{1.25}
-    \label{tab:example_table}
-    \begin{tabular}{|l|l|l|c|}
-    \hline
-    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
-    \hline
-    Item 1 & Description & Category & Value \\
-    Item 2 & Description & Category & Value \\
-    Item 3 & Description & Category & Value \\
-    \hline
-    \end{tabular}
-    \end{table}
-\end{center}
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section5}
-
-
-\subsection{{[Subsection Title]}}
-
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: 
-    \item \textbf{[Item Title]}: 
-    \item \textbf{[Item Title]}: 
-\end{itemize}
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section6}
-
-
-\begin{center}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
-\hline
-Item 1 & Description & Value \\
-\hline
-Item 2 & Description & Value \\
-\hline
-Item 3 & Description & Value \\
-\hline
-\end{tabular}}
-\label{tab:example_table2}
-\end{center}
-
-\newpage 
-
-\section{{Conclusion}} \label{sec:conclusion}
-
-
-\label{MyLastPage}
+% \section{{[Section Title]}}
+% \label{sec:section3}
 
 \end{document}
