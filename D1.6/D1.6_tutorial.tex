@@ -369,7 +369,7 @@ in Listing \ref{lst:preconditioner_setup}.
 Among the several available configuration options, we highlight the integration with the MUMPS package (cfr. deliverable D1.7), which can be employed as a direct coarse-level solver within the AMG preconditioner. This combination is particularly effective for achieving robust convergence when algebraic multigrid methods benefit from an accurate solution at the coarsest level. Moreover, parallel-efficient coarse solvers can improve the overall scalability of the solver, especially in contexts where the size of coarse-level system is large.
 
 
-The solver part therefore remains hence unchanged with respect to standard user codes, and only the AMG4PSBLAS preconditioner settings (coarsening strategy, coarse solver, smoothers, tolerances) may need tuning.
+The solver setup thus remains unchanged with respect to standard user codes; only the AMG4PSBLAS preconditioner settings (coarsening strategy, coarse solver, smoothers, tolerances) may require tuning by users.
 
 
 \begin{lstlisting}[language=C++,caption={Native SolverCG class with PSCToolkit data structures.}, label=lst:linear_solve]
