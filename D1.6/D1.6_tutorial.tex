@@ -282,8 +282,7 @@ multigrid preconditioner implemented by AMG4PSBLAS. Details about the setup of t
 
 \subsection{Include files and problem setup}
 In addition to classical deal.II include files, the tutorial program includes
-the headers which contains the interface common to all linear algebra
-backends used in the deal.II library.
+the headers which contains the interface to PSBLAS and AMG4PSBLAS.
 
 \begin{lstlisting}[language=C++,caption=New header files]
 #include <deal.II/lac/psblas_precondition.h>
@@ -291,7 +290,7 @@ backends used in the deal.II library.
 #include <deal.II/lac/psblas_vector.h>
 \end{lstlisting}
 
-In addition, the tutorial program supports parameter files that can be used at runtime
+The tutorial program supports parameter files that can be used at runtime
 to configure the details of the problem and the solver without recompiling. These
 parameter files allow the user to control, among other settings:
 \begin{itemize}\itemsep0pt\parskip0pt
