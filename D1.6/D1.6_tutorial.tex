@@ -352,8 +352,8 @@ void LaplaceProblem<dim>::setup_system()
 \end{lstlisting}
 
 
-The assembly loop is performed as in any standard tutorial program. It consists of a loop over all the cells owned by the current process, and for each cell, local
-The implementation of the assembly loop can be found in the \texttt{assemble\_system()} member function, which is to all extends identical to many other tutorial programs.
+The assembly loop is performed as in any standard tutorial program, looping over cells owned by the current process and scattering local contributions to the global system matrix and right-hand side vector. The implementation of the assembly loop
+can be found in the \texttt{assemble\_system()} member function, which is to all extends identical to many other tutorial programs.
 
 
 
