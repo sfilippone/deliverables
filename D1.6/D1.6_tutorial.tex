@@ -363,9 +363,10 @@ solution of the linear system. As previously mentioned, the positive definitenes
 calls for the use of the preconditioned conjugate gradient (PCG) method. At the solver stage, the interface to PSCToolkit becomes essentially
 transparent to the user: any Krylov subspace solver provided by the native deal.II library can be instantiated
 with PSCToolkit matrix and vector wrappers, since they comply with the linear-algebra interface expected by deal.II. Hence, we use the native
-\texttt{SolverCG} class, which implements the PCG method, and is templated on the vector type, which is in this case \texttt{PSCToolkit::Vector<double>}. The workflow is shown in following Listing \ref{lst:linear_solve} where, for the sake of clarity, we omit the preconditioner settings, which can be found in Listing \ref{lst:preconditioner_setup}.
+\texttt{SolverCG} class, which implements the PCG method, and is templated on the vector type, which is in this case \texttt{PSCToolkit::Vector<double>}. The workflow is shown in Listing \ref{lst:linear_solve} where, for the sake of clarity, we omit the preconditioner settings, which are reported
+in Listing \ref{lst:preconditioner_setup}.
 
-Among the several available configuration options, we highlight the integration with the MUMPS package (cfr. deliverable D1.7), which can be employed as a direct coarse-level solver within the AMG preconditioner. This combination is particularly effective for achieving robust convergence when algebraic multigrid methods benefit from an accurate solution at the coarsest level. Moreover, efficient parallel-efficient coarse solvers can improve the overall scalability of the solver, especially in contexts where the size of coarse-level system is large.
+Among the several available configuration options, we highlight the integration with the MUMPS package (cfr. deliverable D1.7), which can be employed as a direct coarse-level solver within the AMG preconditioner. This combination is particularly effective for achieving robust convergence when algebraic multigrid methods benefit from an accurate solution at the coarsest level. Moreover, parallel-efficient coarse solvers can improve the overall scalability of the solver, especially in contexts where the size of coarse-level system is large.
 
 
 The solver part therefore remains hence unchanged with respect to standard user codes, and only the AMG4PSBLAS preconditioner settings (coarsening strategy, coarse solver, smoothers, tolerances) may need tuning.
