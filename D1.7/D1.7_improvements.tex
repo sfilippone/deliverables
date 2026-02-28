@@ -52,7 +52,7 @@
     \addVersion{0.2}{22/02/2026}{Marco Feder}{Polygonal discretization module section}
     \addVersion{0.3}{23/02/2026}{Marco Feder}{Integration and preliminary results for PSCToolkit}
     \addVersion{0.4}{23/02/2026}{Chiara Puglisi}{Preliminary results
-      with advanced features in MUMPS}
+        with advanced features in MUMPS}
     \addVersion{0.5}{25/02/2026}{Luca Heltai}{Integration of VTK utilities and new tutorial}
 \end{documentControl}
 
@@ -263,16 +263,10 @@ no structural changes to the application code.
 
 \subsection{Preliminary results for AMG4PSBLAS preconditioners}
 
-In order to assess the correctness and performance of our interface, we have performed a series of
-numerical experiments on the cluster AMELIA. Tables~\ref{tab:amelia_2d} and~\ref{tab:amelia_3d}\todo{Add tables with AMELIA cluster results} report the
-iteration counts obtained with continuous $\mathcal{Q}^1$ finite elements on quadrilateral and hexahedral meshes, respectively, for
-the variable-coefficient Poisson problem
-$$-\nabla \cdot ( k(x) \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
-with homogeneous Dirichlet boundary conditions on $\partial \Omega$. We vary the number of mesh refinement levels, the number of parallel processes, and the anisotropy of the diffusion coefficient $k(x)$, reporting on the
-iteration counts of the AMG4PSBLAS preconditioner.
+To validate the correctness and assess the performance of the AMG4PSBLAS interface, we have developed a tutorial application implementing a finite element solver for the Poisson problem, employing
+nodal Lagrangian $\mathcal{Q}^1$ elements. The implementation and results are documented in deliverable D1.6.
 
-
-To evaluate performance at significantly larger problem sizes, we have been granted access to the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center. These resources will enable us to conduct experiments and benchmarking at scale, providing insight into the behavior of our interface under sizes
+To evaluate performance at significantly larger problem sizes, we have been granted access to the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center\footnote{MareNostrum 5 information: \url{https://www.bsc.es/marenostrum/marenostrum-5}}. These resources will enable us to conduct experiments and benchmarking at scale, providing insight into the behavior of our interface under sizes
 typical of pre-exascale applications.
 
 \subsection{Ongoing and future work}
@@ -293,9 +287,9 @@ Ongoing work includes several tasks aimed at finalizing the integration and asse
 \label{sec:section6}
 
 
- The direct solution of a sparse linear system $Ax=b$ relies on the factorization of the matrix $A$. 
- The robustness of direct methods comes at the cost of a high complexity both in terms
- of number of floating point operations and of memory footprint.
+The direct solution of a sparse linear system $Ax=b$ relies on the factorization of the matrix $A$.
+The robustness of direct methods comes at the cost of a high complexity both in terms
+of number of floating point operations and of memory footprint.
 
 
 The complexity of the direct methods approaches can be reduced thanks to Block
@@ -303,28 +297,28 @@ Low-Rank (BLR) approximation (see \cite{ablm:17b,aabblw:15}) with adaptive preci
 This is illustrated in Table~\ref{t:beltrami} on the Beltrami Flow problem from lifex library. Comparing the first two rows "Full-Rank" factorization and "BLR factorization with adaptive precision" in Table~\ref{t:beltrami} we see that the number of operation is reduce by two orders of magnitude.
 
 \begin{table}[hb]
-\begin{center}
-	\begin{tabular}{|l|c|c|c|c|}
-\hline
-                              & {Memory used}   & Number of op. & Total time &  Backward error  \\
-			      & (Gbytes) & to factor matrix & (sec) & after IR\\
-\hline
-  % 1 Node x 4MPI x 48th  & & & & \\
-    Full-Rank                 &    {620}       &     {1.6E15}   &    {\bf 364}    &      2E-15  \\
-%    BLR(1E-9)+adaptive        &    298       &     6.1E13   &    \phantom{0}57    &      4E-8\phantom{0}   \\
-    BLR(1E-5)+adaptive        &    224       &     2.3E13   &    \phantom{0}38    &      1E-10   \\
-%                    & & & & \\
-\hline
- \multicolumn{5}{c}{ } \\
- \multicolumn{5}{c}{\bf Single precision factorization in double prec instance with mixed precision IR}  \\
-\hline
-       Full-Rank              &    315       &     1.6E15   &    229    &      2E-12   \\
-       BLR(1E-5)+adaptive     &    {125}       &     {2.0E13}   &   \bf{\phantom{0}24}    &      8E-11  \\
+    \begin{center}
+        \begin{tabular}{|l|c|c|c|c|}
+            \hline
+                               & {Memory used} & Number of op.    & Total time         & Backward error            \\
+                               & (Gbytes)      & to factor matrix & (sec)              & after IR                  \\
+            \hline
+            % 1 Node x 4MPI x 48th  & & & & \\
+            Full-Rank          & {620}         & {1.6E15}         & {\bf 364}          & 2E-15                     \\
+            %    BLR(1E-9)+adaptive        &    298       &     6.1E13   &    \phantom{0}57    &      4E-8\phantom{0}   \\
+            BLR(1E-5)+adaptive & 224           & 2.3E13           & \phantom{0}38      & 1E-10                     \\
+            %                    & & & & \\
+            \hline
+            \multicolumn{5}{c}{ }                                                                                  \\
+            \multicolumn{5}{c}{\bf Single precision factorization in double prec instance with mixed precision IR} \\
+            \hline
+            Full-Rank          & 315           & 1.6E15           & 229                & 2E-12                     \\
+            BLR(1E-5)+adaptive & {125}         & {2.0E13}         & \bf{\phantom{0}24} & 8E-11                     \\
 
-\hline
-\end{tabular}
-\caption{\label{t:beltrami} Beltrami matrix, performance analysis, AMD Genoa (4MPI x 48th). IR=Iterative Refinement}
-\end{center}
+            \hline
+        \end{tabular}
+        \caption{\label{t:beltrami} Beltrami matrix, performance analysis, AMD Genoa (4MPI x 48th). IR=Iterative Refinement}
+    \end{center}
 \end{table}
 
 The performance can be further improved using mixed precision algorithms \cite{abhl22a} as illustrated with the last two lines of Table~\ref{t:beltrami}.
@@ -354,11 +348,11 @@ Recent experiments with accelerated nodes (Nvidia-GraceHopper and AMD-Mi250 and 
     \bibitem[Amestoy, Boiteau et al., 2023]{abbg:23}P.~Amestoy, O.~Boiteau, A.~Buttari, M.~Gerest, F.~Jezequel, J.-Y. L'Excellent, and T.~Mary. Mixed precision low-rank approximations and their application to block low-rank {LU} factorization. {\em IMA Journal of Numerical Analysis}, 43:2198--2227, July 2023.
 
     \bibitem[Amestoy, Buttari et al., 2023]{abhl22a} P.~Amestoy, A.~Buttari, N.~J. Higham, J.-Y. L'Excellent, T.~Mary, and B.~Vieubl\'e. Combining sparse approximate factorizations with mixed precision iterative refinement. {\em ACM Transactions on Mathematical Software}, 49(1):1--29, 2023.
-      
+
     \bibitem[Amestoy et al., 2025] {ajlmp:2025} P.~Amestoy, A.~Jego, J.-Y. L'Excellent, T.~Mary, and G.~Pichon. {BLAS-based Block Memory Accessor with Applications to Mixed Precision Sparse Direct Solvers}. preprint submitted to publication, Apr. 2025.
-      
+
     \bibitem[Amestoy et al., 2015]{aabblw:15} P.~R. Amestoy, C.~Ashcraft, O.~Boiteau, A.~Buttari, J.-Y. L'Excellent, and C.~Weisbecker. Improving multifrontal methods by means of block low-rank representations. {\em SIAM Journal on Scientific Computing}, 37(3):A1451--A1474, 2015.
-      
+
     \bibitem[Amestoy et al., 2019]{ablm:17b} P.~R. Amestoy, A.~Buttari, J.-Y. L'Excellent, and T.~Mary. {Performance and Scalability of the Block Low-Rank Multifrontal Factorization on Multicore Architectures}. {\em ACM Transactions on Mathematical Software}, 45:2:1--2:26, 2019.
 
 \end{thebibliography}
