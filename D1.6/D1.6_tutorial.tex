@@ -266,7 +266,7 @@ how to use the wrappers in a simple but illustrative test case, in the spirit of
 tutorials programs of the deal.II library\footnote{\url{https://dealii.org/developer/doxygen/deal.II/Tutorial.html}}.
 
 We consider the following variable-coefficient Poisson problem on a bounded polygonal domain $\Omega \subset \mathbb{R}^d$, $d=2,3$:
-$$-\nabla \cdot ( \mathbf{K} \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
+$$-\nabla \cdot ( \mathbf{K} \nabla u) = f \quad \text{ in } \Omega = [0,1]^d,$$
 where $\mathbf{K}$ is a symmetric and uniformly positive definite tensor and $u$ satisfies homogeneous Dirichlet boundary conditions on $\partial \Omega$. We discretize the continuous problem with standard nodal Lagrangian $\mathcal{Q}^1$ elements on quadrilateral meshes.
 
 All the preliminary steps involved in a standard finite element pipeline, i.e. mesh generation, partitioning
