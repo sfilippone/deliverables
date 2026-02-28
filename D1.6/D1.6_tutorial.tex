@@ -215,6 +215,9 @@
 \begin{documentControl}
   \addVersion{0.1}{Feb 15th 2026}{Salvatore Filippone}{Initial draft}
   \addVersion{0.2}{Feb 27th 2026}{Marco Feder}{Tutorial program}
+  \addVersion{0.3}{Feb 27th 2026}{Salvatore Filippone}{Reorganization
+    of sections}
+  \addVersion{1.0}{Feb 28th 2026}{Salvatore Filippone}{Release}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -266,7 +269,7 @@ how to use the wrappers in a simple but illustrative test case, in the spirit of
 tutorials programs of the deal.II library\footnote{\url{https://dealii.org/developer/doxygen/deal.II/Tutorial.html}}.
 
 We consider the following variable-coefficient Poisson problem on a bounded polygonal domain $\Omega \subset \mathbb{R}^d$, $d=2,3$:
-$$-\nabla \cdot ( \mathbf{K} \nabla u) = f \quad \text{ in } \Omega = [0,1]^d,$$
+$$-\nabla \cdot ( \mathbf{K} \nabla u) = f \quad \text{ in } \Omega = [0,1]^d, \quad d=2,3,$$
 where $\mathbf{K}$ is a symmetric and uniformly positive definite tensor and $u$ satisfies homogeneous Dirichlet boundary conditions on $\partial \Omega$. We discretize the continuous problem with standard nodal Lagrangian $\mathcal{Q}^1$ elements on quadrilateral meshes.
 
 All the preliminary steps involved in a standard finite element pipeline, i.e. mesh generation, partitioning
@@ -290,7 +293,7 @@ the headers which contains the interface to PSBLAS and AMG4PSBLAS.
 #include <deal.II/lac/psblas_vector.h>
 \end{lstlisting}
 
-The tutorial program supports parameter files that can be used at runtime
+In addition, the tutorial program supports parameter files that can be used at runtime
 to configure the details of the problem and the solver without recompiling. These
 parameter files allow the user to control, among other settings:
 \begin{itemize}\itemsep0pt\parskip0pt
@@ -351,8 +354,12 @@ void LaplaceProblem<dim>::setup_system()
 \end{lstlisting}
 
 
-The assembly loop is performed as in any standard tutorial program, looping over cells owned by the current process and scattering local contributions to the global system matrix and right-hand side vector. The implementation of the assembly loop
-can be found in the \texttt{assemble\_system()} member function, which is to all extends identical to many other tutorial programs.
+The assembly loop is performed as in any standard tutorial program. It
+consists of a loop over all the cells owned by the current process,
+scattering local contributions to the global system matrix and
+right-hand side vector. The implementation of the assembly loop 
+can be found in the \texttt{assemble\_system()} member function, which
+is to all extends identical to many other tutorial programs. 
 
 
 
@@ -366,10 +373,21 @@ with PSCToolkit matrix and vector wrappers, since they comply with the linear-al
 \texttt{SolverCG} class, which implements the PCG method, and is templated on the vector type, which is in this case \texttt{PSCToolkit::Vector<double>}. The workflow is shown in Listing \ref{lst:linear_solve} where, for the sake of clarity, we omit the preconditioner settings, which are reported
 in Listing \ref{lst:preconditioner_setup}.
 
-Among the several available configuration options, we highlight the integration with the MUMPS package (cfr. deliverable D1.7), which can be employed as a direct coarse-level solver within the AMG preconditioner. This combination is particularly effective for achieving robust convergence when algebraic multigrid methods benefit from an accurate solution at the coarsest level. Moreover, parallel-efficient coarse solvers can improve the overall scalability of the solver, especially in contexts where the size of coarse-level system is large.
+Among the several available configuration options, we highlight the
+integration with the MUMPS package (cfr. deliverable D1.7), which can
+be employed as a direct coarse-level solver within the AMG
+preconditioner. This combination is particularly effective for
+achieving robust convergence when algebraic multigrid methods benefit
+from an accurate solution at the coarsest level. Moreover,
+parallel-efficient coarse solvers can improve the overall scalability
+of the solver, especially in contexts where the size of coarse-level
+system is large. 
 
 
-The solver setup thus remains unchanged with respect to standard user codes; only the AMG4PSBLAS preconditioner settings (coarsening strategy, coarse solver, smoothers, tolerances) may require tuning by users.
+The solver setup thus remains unchanged with respect to standard user
+codes; only the AMG4PSBLAS preconditioner settings (coarsening
+strategy, coarse solver, smoothers, tolerances) may require tuning by
+users. 
 
 
 \begin{lstlisting}[language=C++,caption={Native SolverCG class with PSCToolkit data structures.}, label=lst:linear_solve]
